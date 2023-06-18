@@ -398,6 +398,7 @@ FodyWeavers.xsd
 *.msp
 
 # JetBrains Rider
+MySocialMedia.sln
 *.sln.iml
 .idea/
 
