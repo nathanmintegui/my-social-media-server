@@ -1,6 +1,6 @@
 using static System.String;
 
-namespace Application.Contracts.Documents.Requests;
+namespace Application.Contracts.Documents.Requests.Auth;
 
 public class LoginRequest
 {
