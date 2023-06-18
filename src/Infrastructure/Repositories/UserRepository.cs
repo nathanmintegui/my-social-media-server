@@ -32,4 +32,25 @@ public class UserRepository : IUserRepository
 
         return user;
     }
+
+    public async Task<User?> CreateUserAsync(User user)
+    {
+        const string query = @"INSERT INTO users(name, email, nickname, birth_date, cep, password, photo) 
+        VALUES(@Name, @Email, @Nickname, @BirthDate, @Cep, @Password, @Photo) returning *";
+
+        var parameters = new
+        {
+            Name = user.Name,
+            Email = user.Email,
+            Nickname = user.Nickname,
+            Birthdate = user.BirthDate,
+            Cep = user.Cep,
+            Password = user.Password,
+            Photo = user.Photo
+        };
+
+        var response = await _connection.QuerySingleAsync<User>(query, parameters);
+
+        return response;
+    }
 }
