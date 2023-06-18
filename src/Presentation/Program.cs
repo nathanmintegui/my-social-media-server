@@ -1,9 +1,20 @@
+using Application.Contracts.Documents;
+using Application.Implementations.Services;
+using Domain.Contracts.Repositories;
+using Infrastructure.Repositories;
+using Presentation.Security;
+
 var builder = WebApplication.CreateBuilder(args);
 
 builder.Services.AddControllers();
 
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
+
+builder.Services.AddScoped<IUserRepository, UserRepository>();
+builder.Services.AddScoped<IAuthService, AuthService>();
+
+builder.Services.AddScoped<TokenService>();
 
 var app = builder.Build();
 
