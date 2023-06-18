@@ -1,6 +1,7 @@
 using Dapper;
 using Domain.Contracts.Repositories;
 using Domain.Models;
+using Microsoft.Extensions.Configuration;
 using Npgsql;
 using static CrossCutting.Utils;
 
@@ -8,16 +9,13 @@ namespace Infrastructure.Repositories;
 
 public class UserRepository : IUserRepository
 {
-    private const string ConnectionString = "Host=localhost:5432;" +
-                                            "Username=postgres;" +
-                                            "Password=postgres;" +
-                                            "Database=postgres";
-
     private readonly NpgsqlConnection _connection;
 
-    public UserRepository()
+    public UserRepository(IConfiguration configuration)
     {
-        _connection = new NpgsqlConnection(ConnectionString);
+        var connectionString = configuration.GetConnectionString("DefaultConnection");
+
+        _connection = new NpgsqlConnection(connectionString);
         _connection.Open();
     }
 
