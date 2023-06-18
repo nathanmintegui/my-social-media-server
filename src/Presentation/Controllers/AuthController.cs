@@ -1,5 +1,5 @@
 using Application.Contracts.Documents;
-using Application.Contracts.Documents.Requests;
+using Application.Contracts.Documents.Requests.Auth;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Presentation.Security;
@@ -10,13 +10,23 @@ namespace Presentation.Controllers;
 [Route("/auth")]
 public class AuthController : ControllerBase
 {
-    private readonly TokenService _tokenService;
     private readonly IAuthService _authService;
+    private readonly TokenService _tokenService;
 
     public AuthController(TokenService tokenService, IAuthService authService)
     {
         _tokenService = tokenService;
         _authService = authService;
+    }
+
+    [HttpPost]
+    [Route("/sign-up")]
+    [AllowAnonymous]
+    public async Task<IActionResult> SignUp([FromBody] SignUpRequest signUpRequest)
+    {
+        var response = await _authService.SignUpAsync(signUpRequest);
+
+        return Created("sign-up", response);
     }
 
     [HttpPost]
