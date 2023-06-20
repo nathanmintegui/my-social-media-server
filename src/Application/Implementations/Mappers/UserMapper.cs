@@ -14,7 +14,7 @@ public static class UserMapper
             signUpRequest.Email,
             signUpRequest.Nickname!,
             signUpRequest.BirthDate,
-            signUpRequest.Cep!,
+            signUpRequest.Cep, 
             hashedPassword,
             signUpRequest.Photo!
         );
