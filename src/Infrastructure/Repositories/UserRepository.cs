@@ -21,12 +21,19 @@ public class UserRepository : IUserRepository
 
     public async Task<User?> GetUserAsync(string email, string password)
     {
+        //todo split hashed pass logic to service layer
         var hashedPassword = Hash(password);
 
-        const string query = @"SELECT * from USERS
-                               WHERE email = @email AND password = @password";
+        const string query = @"SELECT * from users
+                               WHERE email=@Email AND password=@Password";
 
-        var user = await _connection.QueryFirstAsync<User>(query, new { email, password });
+        var parameters = new
+        {
+            Email = email,
+            Password = hashedPassword
+        };
+
+        var user = await _connection.QueryFirstAsync<User>(query, parameters);
 
         return user;
     }
