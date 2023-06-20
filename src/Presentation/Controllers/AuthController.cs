@@ -38,14 +38,16 @@ public class AuthController : ControllerBase
     [HttpPost]
     [Route("/login")]
     [AllowAnonymous]
+    [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(string))]
+    [ProducesResponseType(StatusCodes.Status401Unauthorized, Type = typeof(ErrorResponse))]
     public async Task<IActionResult> Login([FromBody] LoginRequest request)
     {
         var response = await _authService.ValidateLoginAsync(request);
 
-        if (!response.IsAuthenticated) return BadRequest("Usuário e/ou senha incorretos.");
+        if (!response.IsValid()) return Unauthorized(new ErrorResponse(response.Notifications));
 
-        var token = TokenService.GenerateToken(response);
+        var token = _tokenService.GenerateToken(response);
 
-        return Ok(token);
+        return Ok(new {token = token});
     }
 }

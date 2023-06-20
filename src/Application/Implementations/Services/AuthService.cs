@@ -13,6 +13,7 @@ public class AuthService : IAuthService
 {
     private readonly IUserRepository _userRepository;
     private const string MinimumAgeNotificationMessage = "Você precisa ter no mínimo 16 anos.";
+    private const string UserNotAuthorizedNotificationMessage = "Usuário e/ou senha incorretos";
 
     public AuthService(IUserRepository userRepository)
     {
@@ -34,17 +35,26 @@ public class AuthService : IAuthService
 
         var user = await _userRepository.CreateUserAsync(entity);
 
-        response = user!.ToResponse();
+        response = UserMapper.ToResponse(user!);
 
         return response;
     }
 
-    public async Task<LoginResponse> ValidateLoginAsync(LoginRequest request)
+    public async Task<LoginResponse> ValidateLoginAsync(LoginRequest loginRequest)
     {
-        var user = await _userRepository.GetUserAsync(request.Email, request.Password);
+        var response = new LoginResponse();
 
-        var response = new LoginResponse
-            { IsAuthenticated = true, Email = user.Email, Id = user.Id, Username = user.Name };
+        var hashedPassword = Utils.Hash(loginRequest.Password);
+
+        var user = await _userRepository.GetUserAsync(loginRequest.Email, hashedPassword);
+
+        if (user is null)
+        {
+            response.AddNotification(new Notification(UserNotAuthorizedNotificationMessage));
+            return response;
+        }
+
+        response = AuthMapper.ToResponse(user);
 
         return response;
     }

@@ -12,7 +12,7 @@ namespace Presentation.Security;
 
 public class TokenService
 {
-    public static string GenerateToken(LoginResponse login)
+    public string GenerateToken(LoginResponse login)
     {
         var secretKey = UTF8.GetBytes(SecretKey);
 
@@ -24,7 +24,7 @@ public class TokenService
             Subject = new ClaimsIdentity(new[]
             {
                 new Claim("Id", login.Id.ToString()),
-                new Claim(Name, login.Username),
+                new Claim(Name, login.Name),
                 new Claim(Email, login.Email)
             })
         };
