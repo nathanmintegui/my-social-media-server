@@ -2,6 +2,8 @@ using Application.Contracts.Documents;
 using Application.Contracts.Documents.Requests.Auth;
 using Application.Contracts.Documents.Responses;
 using Application.Implementations.Mappers;
+using Application.Implementations.Validations;
+using Application.Implementations.Validators;
 using CrossCutting;
 using Domain.Contracts.Repositories;
 
@@ -10,6 +12,7 @@ namespace Application.Implementations.Services;
 public class AuthService : IAuthService
 {
     private readonly IUserRepository _userRepository;
+    private const string MinimumAgeNotificationMessage = "Você precisa ter no mínimo 16 anos.";
 
     public AuthService(IUserRepository userRepository)
     {
@@ -18,17 +21,20 @@ public class AuthService : IAuthService
 
     public async Task<UserResponse> SignUpAsync(SignUpRequest signUpRequest)
     {
+        var response = new UserResponse();
+
+        if (!signUpRequest.BirthDate.ValidateMinimumAge())
+        {
+            response.AddNotification(new Notification(MinimumAgeNotificationMessage));
+            return response;
+        }
+
         var hashedPassword = Utils.Hash(signUpRequest.Password);
         var entity = signUpRequest.ToEntity(hashedPassword);
 
         var user = await _userRepository.CreateUserAsync(entity);
 
-        if (user == null)
-        {
-            //TODO THROW NEW ERROR;
-        }
-
-        var response = user!.ToResponse();
+        response = user!.ToResponse();
 
         return response;
     }
