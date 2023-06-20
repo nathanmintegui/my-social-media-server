@@ -44,7 +44,9 @@ public class AuthService : IAuthService
     {
         var response = new LoginResponse();
 
-        var user = await _userRepository.GetUserAsync(loginRequest.Email, loginRequest.Password);
+        var hashedPassword = Utils.Hash(loginRequest.Password);
+
+        var user = await _userRepository.GetUserAsync(loginRequest.Email, hashedPassword);
 
         if (user is null)
         {
