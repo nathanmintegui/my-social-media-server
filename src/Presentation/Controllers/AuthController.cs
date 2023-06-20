@@ -1,5 +1,7 @@
 using Application.Contracts.Documents;
 using Application.Contracts.Documents.Requests.Auth;
+using Application.Contracts.Documents.Responses;
+using Application.Implementations.Validations;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Presentation.Security;
@@ -22,9 +24,13 @@ public class AuthController : ControllerBase
     [HttpPost]
     [Route("/sign-up")]
     [AllowAnonymous]
+    [ProducesResponseType(StatusCodes.Status201Created, Type = typeof(UserResponse))]
+    [ProducesResponseType(StatusCodes.Status400BadRequest, Type = typeof(ErrorResponse))]
     public async Task<IActionResult> SignUp([FromBody] SignUpRequest signUpRequest)
     {
         var response = await _authService.SignUpAsync(signUpRequest);
+
+        if (!response.IsValid()) return BadRequest(new ErrorResponse(response.Notifications));
 
         return Created("sign-up", response);
     }
