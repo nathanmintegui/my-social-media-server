@@ -39,9 +39,9 @@ public class AuthService : IAuthService
         return response;
     }
 
-    public async Task<LoginResponse> ValidateLoginAsync(LoginRequest request)
+    public async Task<LoginResponse> ValidateLoginAsync(LoginRequest loginRequest)
     {
-        var user = await _userRepository.GetUserAsync(request.Email, request.Password);
+        var user = await _userRepository.GetUserAsync(loginRequest.Email, loginRequest.Password);
 
         var response = new LoginResponse
             { IsAuthenticated = true, Email = user.Email, Id = user.Id, Username = user.Name };
