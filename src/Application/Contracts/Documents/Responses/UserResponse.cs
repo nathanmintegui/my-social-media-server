@@ -1,8 +1,9 @@
+using Application.Implementations.Validations;
 using static System.String;
 
 namespace Application.Contracts.Documents.Responses;
 
-public class UserResponse
+public class UserResponse : Notifiable
 {
     public int Id { get; set; }
     public string Name { get; set; } = Empty;
