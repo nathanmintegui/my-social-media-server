@@ -17,7 +17,7 @@ builder.Services.AddSwaggerGen(option =>
     {
         Type = "string",
         Format = "date",
-        Example = new OpenApiString("yyyy-mm-dd")
+        Example = new OpenApiString("2000-03-03")
     });
     option.SwaggerDoc("v1", new OpenApiInfo { Title = "My Authorize API", Version = "v1" });
     option.AddSecurityDefinition("Bearer", new OpenApiSecurityScheme
