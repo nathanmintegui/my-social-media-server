@@ -1,6 +1,5 @@
 using Application.Contracts.Documents.Requests.Auth;
 using Application.Contracts.Documents.Responses;
-using Domain.Models;
 
 namespace Application.Contracts.Documents;
 
