@@ -1,4 +1,5 @@
 using System.Text;
+using Application.Contracts;
 using Application.Contracts.Documents;
 using Application.Implementations.Services;
 using Domain.Contracts.Repositories;
@@ -49,9 +50,11 @@ builder.Services.AddSwaggerGen(option =>
 });
 
 builder.Services.AddScoped<IUserRepository, UserRepository>();
-builder.Services.AddScoped<IAuthService, AuthService>();
+builder.Services.AddScoped<IPostRepository, PostRepository>();
 
+builder.Services.AddScoped<IAuthService, AuthService>();
 builder.Services.AddScoped<TokenService>();
+builder.Services.AddScoped<IPostService, PostService>();
 
 builder.Services.AddAuthentication(options =>
 {
