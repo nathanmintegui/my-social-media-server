@@ -3,7 +3,6 @@ using Domain.Contracts.Repositories;
 using Domain.Models;
 using Microsoft.Extensions.Configuration;
 using Npgsql;
-using static CrossCutting.Utils;
 
 namespace Infrastructure.Repositories;
 
@@ -31,6 +30,20 @@ public class UserRepository : IUserRepository
         };
 
         var user = await _connection.QueryFirstAsync<User>(query, parameters);
+
+        return user;
+    }
+
+    public async Task<User?> GetUserByIdAsync(int id)
+    {
+        const string query = @"SELECT * FROM users WHERE id = @Id";
+
+        var parameters = new
+        {
+            Id = id
+        };
+
+        var user = await _connection.QueryFirstOrDefaultAsync<User>(query, parameters);
 
         return user;
     }
