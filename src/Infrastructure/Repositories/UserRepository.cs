@@ -1,4 +1,5 @@
 using Dapper;
+using Dapper.Contrib.Extensions;
 using Domain.Contracts.Repositories;
 using Domain.Models;
 using Microsoft.Extensions.Configuration;
@@ -50,21 +51,9 @@ public class UserRepository : IUserRepository
 
     public async Task<User?> CreateUserAsync(User user)
     {
-        const string query = @"INSERT INTO users(name, email, nickname, birth_date, cep, password, photo) 
-        VALUES(@Name, @Email, @Nickname, @BirthDate, @Cep, @Password, @Photo) returning *";
+        var userId = await _connection.InsertAsync(user);
 
-        var parameters = new
-        {
-            Name = user.Name,
-            Email = user.Email,
-            Nickname = user.Nickname,
-            Birthdate = user.BirthDate,
-            Cep = user.Cep,
-            Password = user.Password,
-            Photo = user.Photo
-        };
-
-        var response = await _connection.QuerySingleAsync<User>(query, parameters);
+        var response = await _connection.GetAsync<User>(userId);
 
         return response;
     }
