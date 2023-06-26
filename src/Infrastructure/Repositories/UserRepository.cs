@@ -37,14 +37,7 @@ public class UserRepository : IUserRepository
 
     public async Task<User?> GetUserByIdAsync(int id)
     {
-        const string query = @"SELECT * FROM users WHERE id = @Id";
-
-        var parameters = new
-        {
-            Id = id
-        };
-
-        var user = await _connection.QueryFirstOrDefaultAsync<User>(query, parameters);
+        var user = await _connection.GetAsync<User>(id);
 
         return user;
     }
