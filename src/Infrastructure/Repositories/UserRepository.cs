@@ -30,7 +30,7 @@ public class UserRepository : IUserRepository
             Password = password
         };
 
-        var user = await _connection.QueryFirstAsync<User>(query, parameters);
+        var user = await _connection.QueryFirstOrDefaultAsync<User>(query, parameters);
 
         return user;
     }
