@@ -44,9 +44,21 @@ public class UserRepository : IUserRepository
 
     public async Task<User?> CreateUserAsync(User user)
     {
-        var userId = await _connection.InsertAsync(user);
+        const string query = @"INSERT INTO users(name, email, nickname, birth_date, cep, password, photo) 
+        VALUES(@Name, @Email, @Nickname, @BirthDate, @Cep, @Password, @Photo) returning *";
 
-        var response = await _connection.GetAsync<User>(userId);
+        var parameters = new
+        {
+            user.Name,
+            user.Email,
+            user.Nickname,
+            Birthdate = user.BirthDate,
+            user.Cep,
+            user.Password,
+            user.Photo
+        };
+
+        var response = await _connection.QuerySingleAsync<User>(query, parameters);
 
         return response;
     }
