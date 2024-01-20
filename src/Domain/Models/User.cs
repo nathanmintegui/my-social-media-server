@@ -23,9 +23,9 @@ public class User
     public int Id { get; private set; }
     public string Name { get; private set; }
     public string Email { get; private set; }
-    public string? Nickname { get; set; }
+    public string? Nickname { get; private set; }
     public DateTime BirthDate { get; private set; }
     public string Cep { get; private set; }
     public string Password { get; private set; }
-    public string? Photo { get; set; }
+    public string? Photo { get; private set; }
 }
