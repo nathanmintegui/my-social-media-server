@@ -14,6 +14,7 @@ public class AuthService : IAuthService
     private readonly IUserRepository _userRepository;
     private const string MinimumAgeNotificationMessage = "Você precisa ter no mínimo 16 anos.";
     private const string UserNotAuthorizedNotificationMessage = "Usuário e/ou senha incorretos";
+    private const string EmailAlreadyInUseNotificationMessage = "Email já cadastrado.";
 
     public AuthService(IUserRepository userRepository)
     {
@@ -23,6 +24,13 @@ public class AuthService : IAuthService
     public async Task<UserResponse> SignUpAsync(SignUpRequest signUpRequest)
     {
         var response = new UserResponse();
+
+        var isEmailAlreadyInUse = await _userRepository.ValidateEmail(signUpRequest.Email);
+        if (!isEmailAlreadyInUse)
+        {
+            response.AddNotification(new Notification(EmailAlreadyInUseNotificationMessage));
+            return response;
+        }
 
         if (!signUpRequest.BirthDate.ValidateMinimumAge())
         {
