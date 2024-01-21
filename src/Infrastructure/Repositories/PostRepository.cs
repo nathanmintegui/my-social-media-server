@@ -36,4 +36,20 @@ public class PostRepository : IPostRepository
 
         return response;
     }
+
+    public async Task<bool> ValidateIfPostExistsAsync(int postId)
+    {
+        const string query = @"SELECT 1
+                                FROM post
+                                WHERE id = @PostId";
+
+        var parameters = new
+        {
+            PostId = postId
+        };
+
+        var response = await _connection.QueryFirstOrDefaultAsync<bool>(query, parameters);
+
+        return response;
+    }
 }
