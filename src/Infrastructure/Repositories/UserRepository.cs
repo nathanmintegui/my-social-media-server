@@ -62,4 +62,20 @@ public class UserRepository : IUserRepository
 
         return response;
     }
+
+    public async Task<bool> ValidateEmail(string email)
+    {
+        const string query = @"SELECT email FROM users WHERE email = @Email";
+
+        var parameters = new
+        {
+            Email = email
+        };
+
+        var result = await _connection.QueryFirstOrDefaultAsync<string?>(query, parameters);
+
+        await _connection.CloseAsync();
+
+        return result == null;
+    }
 }
