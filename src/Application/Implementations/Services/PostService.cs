@@ -3,6 +3,7 @@ using Application.Contracts.Documents.Requests.Post;
 using Application.Contracts.Documents.Responses;
 using Application.Implementations.Mappers;
 using Domain.Contracts.Repositories;
+using Domain.Models;
 
 namespace Application.Implementations.Services;
 
@@ -30,5 +31,15 @@ public class PostService : IPostService
         var response = PostMapper.ToResponse(post!, postOwnerResponse);
 
         return response!;
+    }
+
+    public async Task<List<Post>?> ListPublicUserPostsAsync(int userId)
+    {
+        _ = await _userRepository.GetUserByIdAsync(userId) ??
+            throw new Exception($"Usuário com ID {userId} não encontrado.");
+
+        var response = await _postRepository.GetPublicUserPostsByIdAsync(userId);
+
+        return response;
     }
 }
