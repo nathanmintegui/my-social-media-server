@@ -9,13 +9,15 @@ namespace Application.Implementations.Services;
 
 public class PostService : IPostService
 {
+    private readonly ILikeRepository _likeRepository;
     private readonly IPostRepository _postRepository;
     private readonly IUserRepository _userRepository;
 
-    public PostService(IPostRepository postRepository, IUserRepository userRepository)
+    public PostService(IPostRepository postRepository, IUserRepository userRepository, ILikeRepository likeRepository)
     {
         _postRepository = postRepository;
         _userRepository = userRepository;
+        _likeRepository = likeRepository;
     }
 
     public async Task<PostResponse> CreateAsync(CreatePostRequest createPostRequest, int id)
@@ -41,5 +43,18 @@ public class PostService : IPostService
         var response = await _postRepository.GetPublicUserPostsByIdAsync(userId);
 
         return response;
+    }
+
+    public async Task LikePostAsync(int postId, int userId) // TODO: user validatitor and post validator
+    {
+        _ = await _userRepository.GetUserByIdAsync(userId) ??
+            throw new Exception($"Usuário com ID {userId} não encontrado.");
+
+        _ = await _postRepository.GetPostByIdAsync(postId) ??
+            throw new Exception($"Post com ID {postId} não encontrado.");
+
+        // TODO: make shure i am friend of the post owner when its private
+
+        await _likeRepository.CreateOrUpdateLikeByPostIdAsync(postId, userId);
     }
 }
