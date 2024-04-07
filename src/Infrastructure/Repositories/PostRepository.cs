@@ -27,10 +27,10 @@ public class PostRepository : IPostRepository
         var parameters = new
         {
             OwnerId = ownerId,
-            Image = post.Image,
-            Message = post.Message,
-            Privacy = post.Privacy,
-            CreatedAt = post.CreatedAt
+            post.Image,
+            post.Message,
+            post.Privacy,
+            post.CreatedAt
         };
 
         var response = await _connection.QueryFirstOrDefaultAsync<Post>(query, parameters);
@@ -93,5 +93,26 @@ public class PostRepository : IPostRepository
         }, splitOn: "comment_id", param: parameters);
 
         return postDictionary.Values.ToList();
+    }
+
+    public async Task<Post?> GetPostByIdAsync(int postId)
+    {
+        const string query = @"
+            SELECT
+                *
+            FROM
+                post
+            WHERE
+                id = @PostId;
+        ";
+
+        var parameters = new
+        {
+            PostId = postId
+        };
+
+        var result = await _connection.QueryFirstOrDefaultAsync<Post>(query, parameters);
+
+        return result;
     }
 }
