@@ -36,4 +36,16 @@ public class PostController : ControllerBase
 
         return Ok(response);
     }
+
+    [HttpPost]
+    [Authorize]
+    [Route("/posts/{postId}/like")]
+    public async Task<IActionResult> Like([FromRoute] int postId) // TODO: docs
+    {
+        var userId = int.Parse(User.Claims.FirstOrDefault(claim => claim.Type.Equals("Id"))?.Value!);
+
+        await _postService.LikePostAsync(postId, userId);
+
+        return NoContent();
+    }
 }
