@@ -6,7 +6,7 @@ namespace Application.Implementations.Services;
 
 public class FriendshipService : IFriendshipService
 {
-    private const int SuccessInsertedRowCode = 1;
+    private const int Success = 1;
 
     private readonly IFriendshipRepository _friendshipRepository;
     private readonly IUserRepository _userRepository;
@@ -37,14 +37,31 @@ public class FriendshipService : IFriendshipService
                 throw new Exception("Convite de amizade já solicitado.");
             case (int)Rejected:
                 result = await _friendshipRepository.CreateFriendshipInviteAsync(userId, friendId);
-                if (result != SuccessInsertedRowCode)
+                if (result != Success)
                     throw new Exception("Ocorreu um erro ao realizar convite.");
                 break;
             case null:
                 result = await _friendshipRepository.CreateFriendshipInviteAsync(userId, friendId);
-                if (result != SuccessInsertedRowCode)
+                if (result != Success)
                     throw new Exception("Ocorreu um erro ao realizar convite.");
                 break;
         }
+    }
+
+    public async Task AcceptFriendshipInviteAsync(int userId, int inviteId)
+    {
+        var friendshipInvite = await _friendshipRepository.GetFriendshipInviteById(inviteId) ??
+                               throw new Exception("Esta solitação de amizade não existe para a sua conta.");
+
+        if (friendshipInvite.Status != Pending)
+            throw new Exception("Não é possível aceitar esta solicitação.");
+
+        if (friendshipInvite.AccepterId != userId)
+            throw new Exception("Solicitação de amizade inválida.");
+
+        var result = await _friendshipRepository.UpdateFriendshipInviteSituationAsync((int)Accepted,
+            inviteId, userId);
+
+        if (result != Success) throw new Exception("Ocorreu um erro ao processar a requição;");
     }
 }

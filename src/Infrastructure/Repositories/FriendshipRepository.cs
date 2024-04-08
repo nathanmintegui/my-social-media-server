@@ -1,5 +1,6 @@
 using Dapper;
 using Domain.Contracts.Repositories;
+using Domain.Models;
 using Microsoft.Extensions.Configuration;
 using Npgsql;
 
@@ -63,5 +64,63 @@ public class FriendshipRepository : IFriendshipRepository
         var result = await _connection.ExecuteAsync(query, parameters);
 
         return result;
+    }
+
+    public async Task<Friendship?> GetFriendshipInviteById(int inviteId)
+    {
+        const string query = @"
+            SELECT
+                *
+            FROM
+                friendships
+            WHERE
+                friendship_id = @InviteId;
+        ";
+
+        var parameters = new
+        {
+            Inviteid = inviteId
+        };
+
+        var result = await _connection.QueryFirstOrDefaultAsync<Friendship>(query, parameters);
+
+        return result;
+    }
+
+    public async Task<int> UpdateFriendshipInviteSituationAsync(int situationCode, int inviteId, int userId)
+    {
+        await using var transaction = await _connection.BeginTransactionAsync();
+
+        try
+        {
+            const string query = @"
+                UPDATE 
+                    friendships
+                SET 
+                    status = @Situation
+                WHERE 
+                        friendship_id = @InviteId
+                    AND accepter_id   = @UserId
+                    AND status        = 3
+        ";
+
+            var parameters = new
+            {
+                Situation = situationCode,
+                InviteId = inviteId,
+                UserId = userId
+            };
+
+            var result = await _connection.ExecuteAsync(query, parameters);
+
+            await transaction.CommitAsync();
+
+            return result;
+        }
+        catch
+        {
+            await transaction.RollbackAsync();
+            throw;
+        }
     }
 }
