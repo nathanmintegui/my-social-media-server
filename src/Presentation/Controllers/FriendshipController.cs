@@ -25,4 +25,16 @@ public class FriendshipController : ControllerBase
 
         return NoContent();
     }
+
+    [HttpPatch]
+    [Authorize]
+    [Route("/friendships/invites/{inviteId}/accept")]
+    public async Task<IActionResult> AcceptInvite([FromRoute] int inviteId)
+    {
+        var userId = int.Parse(User.Claims.FirstOrDefault(claim => claim.Type.Equals("Id"))?.Value!);
+
+        await _friendshipService.AcceptFriendshipInviteAsync(userId, inviteId);
+
+        return NoContent();
+    }
 }
