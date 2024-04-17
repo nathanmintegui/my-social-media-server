@@ -123,4 +123,30 @@ public class FriendshipRepository : IFriendshipRepository
             throw;
         }
     }
+
+    public async Task<List<User?>> GetFriendsAsync(int userId)
+    {
+        const string query = @"
+            SELECT 
+                u.*
+            FROM 
+                users u	
+            JOIN
+                friendships f ON requester_id = @UserId OR accepter_id = @UserId
+            WHERE
+                    f.status = 1 
+                AND u.id != @UserId;
+        ";
+
+        var parameters = new
+        {
+           UserId = userId 
+        };
+
+        var friends = await _connection.QueryAsync<User>(query, parameters);
+
+        await _connection.CloseAsync();
+
+        return friends.ToList()!;
+    }
 }

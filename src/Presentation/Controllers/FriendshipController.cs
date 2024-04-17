@@ -37,4 +37,16 @@ public class FriendshipController : ControllerBase
 
         return NoContent();
     }
+
+    [HttpGet]
+    [Authorize]
+    [Route("/friendships")] // TODO: implement pagination 
+    public async Task<IActionResult> ListFriends()
+    {
+        var userId = int.Parse(User.Claims.FirstOrDefault(claim => claim.Type.Equals("Id"))?.Value!);
+
+        var response = await _friendshipService.ListFriendsAsync(userId);
+
+        return Ok(response);
+    }
 }

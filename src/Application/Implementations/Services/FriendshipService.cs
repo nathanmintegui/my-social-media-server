@@ -1,5 +1,6 @@
 using Application.Contracts.Documents;
 using Domain.Contracts.Repositories;
+using Domain.Models;
 using static Domain.Models.Situation;
 
 namespace Application.Implementations.Services;
@@ -63,5 +64,12 @@ public class FriendshipService : IFriendshipService
             inviteId, userId);
 
         if (result != Success) throw new Exception("Ocorreu um erro ao processar a requição;");
+    }
+
+    public async Task<List<User?>> ListFriendsAsync(int userId)
+    {
+        var friends = await _friendshipRepository.GetFriendsAsync(userId);
+
+        return friends;
     }
 }
