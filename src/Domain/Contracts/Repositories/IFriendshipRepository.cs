@@ -9,4 +9,5 @@ public interface IFriendshipRepository
     Task<Friendship?> GetFriendshipInviteById(int inviteId);
     Task<int> UpdateFriendshipInviteSituationAsync(int situationCode, int inviteId, int userId);
     Task<List<User?>> GetFriendsAsync(int userId);
+    Task<List<User?>> GetFriendshipInvitesAsync(int userId);
 }

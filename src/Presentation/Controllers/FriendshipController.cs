@@ -49,4 +49,16 @@ public class FriendshipController : ControllerBase
 
         return Ok(response);
     }
+    
+    [HttpGet]
+    [Authorize]
+    [Route("/friendships/invites")] // TODO: implement pagination 
+    public async Task<IActionResult> ListInvites()
+    {
+        var userId = int.Parse(User.Claims.FirstOrDefault(claim => claim.Type.Equals("Id"))?.Value!);
+
+        var response = await _friendshipService.ListInvitesAsync(userId);
+
+        return Ok(response);
+    }
 }

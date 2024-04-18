@@ -72,4 +72,11 @@ public class FriendshipService : IFriendshipService
 
         return friends;
     }
+
+    public async Task<List<User?>> ListInvitesAsync(int userId)
+    {
+        var invites = await _friendshipRepository.GetFriendshipInvitesAsync(userId);
+
+        return invites;
+    }
 }

@@ -7,4 +7,5 @@ public interface IFriendshipService
    Task RequestFriendshipAsync(int userId, int friendId);
    Task AcceptFriendshipInviteAsync(int userId, int inviteId);
    Task<List<User?>> ListFriendsAsync(int userId);
+   Task<List<User?>> ListInvitesAsync(int userId);
 }

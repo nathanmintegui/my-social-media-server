@@ -149,4 +149,30 @@ public class FriendshipRepository : IFriendshipRepository
 
         return friends.ToList()!;
     }
+
+    public async Task<List<User?>> GetFriendshipInvitesAsync(int userId)
+    {
+        const string query = @"
+            SELECT 
+                u.*
+            FROM 
+                users u	
+            JOIN
+                friendships f ON accepter_id = @UserId
+            WHERE
+                    f.status = 3
+                AND u.id != @UserId;
+        ";
+
+        var parameters = new
+        {
+           UserId = userId 
+        };
+
+        var invites= await _connection.QueryAsync<User>(query, parameters);
+
+        await _connection.CloseAsync();
+
+        return invites.ToList()!;
+    }
 }
