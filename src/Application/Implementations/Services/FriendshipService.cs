@@ -79,4 +79,22 @@ public class FriendshipService : IFriendshipService
 
         return invites;
     }
+
+    public async Task BlockFriendAsync(int userId, int friendId)
+    {
+        if (friendId == userId) throw new Exception("Id inválido");
+
+        _ = await _userRepository.GetUserByIdAsync(friendId) ??
+            throw new Exception($"Usuário com ID {friendId} não encontrado.");
+
+        var friendship = await _friendshipRepository.GetFriendshipByUserIdAsync(userId, friendId) ??
+                         throw new Exception("Operação inválida, você não tem nenhum vínculo com este usuário.");
+
+        if (friendship.Status != Accepted) throw new Exception("Operação inválida, você não é amigo deste usuário.");
+
+        var result =
+            await _friendshipRepository.UpdateFriendshipSituationAsync(friendship.FriendshipId, (int)Blocked);
+
+        if (result != Success) throw new Exception("Ocorreu um erro ao bloquear o usuário.");
+    }
 }

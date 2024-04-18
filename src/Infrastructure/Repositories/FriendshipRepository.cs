@@ -140,7 +140,7 @@ public class FriendshipRepository : IFriendshipRepository
 
         var parameters = new
         {
-           UserId = userId 
+            UserId = userId
         };
 
         var friends = await _connection.QueryAsync<User>(query, parameters);
@@ -166,13 +166,73 @@ public class FriendshipRepository : IFriendshipRepository
 
         var parameters = new
         {
-           UserId = userId 
+            UserId = userId
         };
 
-        var invites= await _connection.QueryAsync<User>(query, parameters);
+        var invites = await _connection.QueryAsync<User>(query, parameters);
 
         await _connection.CloseAsync();
 
         return invites.ToList()!;
+    }
+
+    public async Task<Friendship?> GetFriendshipByUserIdAsync(int userId, int friendId)
+    {
+        const string query = @"
+            SELECT
+                *
+            FROM
+                friendships
+            WHERE
+                (requester_id, accepter_id) IN ((@UserId, @FriendId), (@FriendId, @UserId));
+        ";
+
+        var parameters = new
+        {
+            UserId = userId,
+            FriendId = friendId
+        };
+
+        var friendship = await _connection.QueryFirstOrDefaultAsync<Friendship>(query, parameters);
+
+        await _connection.CloseAsync();
+
+        return friendship;
+    }
+
+    public async Task<int> UpdateFriendshipSituationAsync(int friendshipId, int status)
+    {
+        await _connection.OpenAsync();
+
+        await using var transaction = await _connection.BeginTransactionAsync();
+        
+        try
+        {
+            const string query = @"
+            UPDATE
+                friendships
+            SET
+                status = @Status
+            WHERE
+                friendship_id = @FriendshipId;
+        ";
+
+            var parameters = new
+            {
+                Status = status,
+                FriendshipId = friendshipId
+            };
+
+            var result = await _connection.ExecuteAsync(query, parameters);
+
+            await transaction.CommitAsync();
+
+            return result;
+        }
+        catch (Exception e)
+        {
+            await transaction.RollbackAsync();
+            throw;
+        }
     }
 }

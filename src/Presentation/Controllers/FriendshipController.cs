@@ -49,7 +49,7 @@ public class FriendshipController : ControllerBase
 
         return Ok(response);
     }
-    
+
     [HttpGet]
     [Authorize]
     [Route("/friendships/invites")] // TODO: implement pagination 
@@ -60,5 +60,17 @@ public class FriendshipController : ControllerBase
         var response = await _friendshipService.ListInvitesAsync(userId);
 
         return Ok(response);
+    }
+
+    [HttpPatch]
+    [Authorize]
+    [Route("/friendships/{friendId}/block")]
+    public async Task<IActionResult> BlockFriend([FromRoute] int friendId)
+    {
+        var userId = int.Parse(User.Claims.FirstOrDefault(claim => claim.Type.Equals("Id"))?.Value!);
+
+        await _friendshipService.BlockFriendAsync(userId, friendId);
+
+        return NoContent();
     }
 }
