@@ -27,8 +27,9 @@ public class FriendshipService : IFriendshipService
 
         int result;
 
-        var friendshipSituationCode = await _friendshipRepository.GetFriendshipSituationAsync(userId, friendId);
-        switch (friendshipSituationCode)
+        var friendship = await _friendshipRepository.GetFriendshipByUserIdAsync(userId, friendId);
+
+        switch (friendship!.FriendshipId)
         {
             case (int)Accepted:
                 throw new Exception("Você já é amigo deste usuário.");
@@ -37,11 +38,12 @@ public class FriendshipService : IFriendshipService
             case (int)Pending:
                 throw new Exception("Convite de amizade já solicitado.");
             case (int)Rejected:
-                result = await _friendshipRepository.CreateFriendshipInviteAsync(userId, friendId);
+                result = await _friendshipRepository.UpdateFriendshipSituationAsync(friendship.FriendshipId,
+                    (int)Pending);
                 if (result != Success)
                     throw new Exception("Ocorreu um erro ao realizar convite.");
                 break;
-            case null:
+            default:
                 result = await _friendshipRepository.CreateFriendshipInviteAsync(userId, friendId);
                 if (result != Success)
                     throw new Exception("Ocorreu um erro ao realizar convite.");
